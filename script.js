@@ -1,7 +1,5 @@
-const checkoutUrl = "";
+const checkoutUrl = "https://pay.kiwify.com/I2kqY2M";
 
-document.querySelectorAll("[data-checkout]").forEach((link) => {
-  if (checkoutUrl) {
-    link.href = checkoutUrl;
-  }
+document.querySelectorAll(".cta-link").forEach((link) => {
+  link.href = checkoutUrl;
 });
