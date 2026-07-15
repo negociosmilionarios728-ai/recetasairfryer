@@ -1,31 +1,52 @@
 const checkoutUrl = "https://zuckpay.com.br/checkout/1000-recetas-para-airfryer";
 
-// Atualiza todos os links do checkout
-document.querySelectorAll(".cta-link").forEach((link) => {
-  link.href = checkoutUrl;
-});
+function buildCheckoutUrl(baseUrl) {
+    const current = new URLSearchParams(window.location.search);
 
-// Dispara o IC antes de ir para o checkout
-document.querySelectorAll("[data-checkout], .cta-link").forEach((button) => {
-  button.addEventListener("click", function (e) {
-    e.preventDefault();
+    const params = [
+        "utm_source",
+        "utm_medium",
+        "utm_campaign",
+        "utm_content",
+        "utm_term",
+        "utm_id",
+        "fbclid",
+        "fbc",
+        "fbp",
+        "src",
+        "sck",
+        "xcod",
+        "ttclid"
+    ];
 
-    // Meta Pixel
-    if (typeof fbq !== "undefined") {
-      fbq("track", "InitiateCheckout");
-    }
+    const url = new URL(baseUrl);
 
-    // UTMify Pixel
-    if (
-      window.pixel &&
-      typeof window.pixel.track === "function"
-    ) {
-      window.pixel.track("InitiateCheckout");
-    }
+    params.forEach(param => {
+        const value = current.get(param);
+        if (value) {
+            url.searchParams.set(param, value);
+        }
+    });
 
-    // Pequeno atraso para garantir o envio
-    setTimeout(() => {
-      window.location.href = checkoutUrl;
-    }, 350);
-  });
+    return url.toString();
+}
+
+document.querySelectorAll(".cta-link").forEach(link => {
+
+    link.href = buildCheckoutUrl(checkoutUrl);
+
+    link.addEventListener("click", function(e){
+
+        e.preventDefault();
+
+        if (typeof fbq !== "undefined") {
+            fbq("track", "InitiateCheckout");
+        }
+
+        setTimeout(() => {
+            window.location.href = buildCheckoutUrl(checkoutUrl);
+        },300);
+
+    });
+
 });
